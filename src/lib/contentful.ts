@@ -1,14 +1,4 @@
-import contentful, { EntryFieldTypes } from "contentful";
-
-
-export interface FeaturedMoments {
-  contentTypeId: "featuredMoments",
-  fields: {
-    image: EntryFieldTypes.AssetLink,
-    title: EntryFieldTypes.Text
-    description: EntryFieldTypes.RichText,
-  }
-}
+import * as contentful from 'contentful';
 
 export const contentfulClient = contentful.createClient({
   space: import.meta.env.CONTENTFUL_SPACE_ID,
@@ -17,3 +7,23 @@ export const contentfulClient = contentful.createClient({
     : import.meta.env.CONTENTFUL_DELIVERY_TOKEN,
   host: import.meta.env.DEV ? "preview.contentful.com" : "cdn.contentful.com",
 });
+
+export interface Moments {
+  title: string;
+  description: string;
+  image: {
+    fields: {
+      file: {
+        url: string;
+      };
+    };
+  };
+}
+
+export async function getMoments(): Promise<FeaturedMoments[]> {
+  const entries = await contentfulClient.getEntries<FeaturedMoments>({
+    content_type: 'featuredMoments',
+  });
+  return entries.items.map((item) => item.fields);
+}
+

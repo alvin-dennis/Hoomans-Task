@@ -1,0 +1,138 @@
+---
+import { getMoments, type Moments } from "../lib/contentful";
+
+const moments: Moments[] = await getMoments();
+---
+
+<section id="moments" class="py-20 bg-white dark:bg-gray-900">
+  <div class="container mx-auto px-6">
+    <div class="max-w-3xl relative">
+      <h2 class="text-4xl font-normal mb-4 tracking-tight">Featured Moments</h2>
+      <div class="flex justify-between items-start mb-10">
+        <p class="text-gray-600 text-lg leading-relaxed">
+          Our experiences reflect our distinct ethos and core values,
+          highlighting
+          <br />
+          the very best each of our homes offers.
+        </p>
+        <div class="flex gap-2">
+          <button
+            class="px-3 py-2 text-white bg-white rounded-full hover:bg-gray-200 border border-gray-700"
+            id="prevArrow"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="#000000"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              class="lucide lucide-move-left"
+            >
+              <path d="M6 8L2 12L6 16"></path>
+              <path d="M2 12H22"></path>
+            </svg>
+          </button>
+          <button
+            class="px-3 py-2 text-white bg-white rounded-full hover:bg-gray-200 border border-gray-700"
+            id="nextArrow"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="#000000"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              class="lucide lucide-move-right"
+            >
+              <path d="M18 8L22 12L18 16"></path>
+              <path d="M2 12H22"></path>
+            </svg>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="carousel relative w-[1280px] h-[455px] mx-auto">
+      <div class="carousel-track flex" id="carouselTrack">
+        {
+          moments.map((moment) => (
+            <div class="Card bg-white flex-shrink-0 w-[400px] h-[435px]  transition-all duration-300 hover:-translate-y-1 hover:shadow-lg">
+              <div class="relative w-full h-[280px]">
+                <img
+                  src={moment.image.fields.file.url}
+                  alt={moment.title}
+                  class="w-full h-full object-cover transition-transform duration-500 hover:scale-105"
+                />
+              </div>
+              <div class="p-4">
+                <h3 class="text-2xl font-normal mb-3">{moment.title}</h3>
+                <p class="text-gray-600">{moment.description}</p>
+              </div>
+            </div>
+          ))
+        }
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .carousel-track {
+    display: flex;
+    gap: 1rem;
+    transition: transform 0.3s ease;
+  }
+
+  @media (min-width: 640px) {
+    .Card {
+      width: calc(50% - 1rem);
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .Card {
+      width: calc(33.33% - 1rem);
+    }
+  }
+
+  body {
+    overflow-x: hidden;
+    
+  }
+</style>
+
+<script>
+  let currentIndex = 0;
+  const carouselTrack = document.getElementById("carouselTrack");
+  const totalCards = carouselTrack.children.length;
+  const cardWidth = carouselTrack.querySelector(".Card").offsetWidth + 24;
+  const prevArrow = document.getElementById("prevArrow");
+  const nextArrow = document.getElementById("nextArrow");
+
+  const updateCarouselPosition = () => {
+    carouselTrack.style.transform = `translateX(-${currentIndex * cardWidth}px)`;
+  };
+
+  prevArrow.addEventListener("click", () => {
+    currentIndex = (currentIndex - 1 + totalCards) % totalCards;
+    updateCarouselPosition();
+  });
+
+  nextArrow.addEventListener("click", () => {
+    currentIndex = (currentIndex + 1) % totalCards;
+    updateCarouselPosition();
+  });
+
+  setInterval(() => {
+    currentIndex = (currentIndex + 1) % totalCards;
+    updateCarouselPosition();
+  }, 5000);
+</script>
